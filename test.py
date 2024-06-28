@@ -38,6 +38,7 @@ def change_saturation(image, saturation_scale=1.5):
     return bgr_image
 
 def process_images_in_folder(folder_path, grid_templates,player_template_path, enemy_template_path):
+    all_processed_photos = []
     for filename in os.listdir(folder_path):
         if filename.startswith("PlayerUnknown's") and filename.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp')):
             image_path = os.path.join(folder_path, filename)
@@ -45,7 +46,7 @@ def process_images_in_folder(folder_path, grid_templates,player_template_path, e
             if image is None:
                 print(f"Error loading image from {image_path}")
                 continue
-
+            
             screenshot = change_saturation(image)
             screenshot = cv2.convertScaleAbs(screenshot, alpha=2, beta=0)
             screenshot = apply_shadow_boost(screenshot)
@@ -66,7 +67,7 @@ def process_images_in_folder(folder_path, grid_templates,player_template_path, e
             player_loc, player_val = match_template(player_template, screenshot)
             enemy_loc,  enemy_val  = match_template(enemy_template, screenshot)
 
-            print(f"игрок = {player_val}, враг = {enemy_val}")
+            #print(f"игрок = {player_val}, враг = {enemy_val}")
 
             threshold = 0.4  # You can adjust this threshold based on your requirement
             
@@ -84,7 +85,7 @@ def process_images_in_folder(folder_path, grid_templates,player_template_path, e
                 
                 temp_grid = grid_templates_for_color
                 h, w = temp_grid[0][0].shape[:2]
-                print(grids_templates[0])
+                #print(grids_templates[0])
                 cv2.rectangle(screenshot, grids_templates[0][0], (grids_templates[0][0][0] + w, grids_templates[0][0][1] + h), (0, 255, 0), 3)
                 
 
@@ -101,15 +102,9 @@ def process_images_in_folder(folder_path, grid_templates,player_template_path, e
                 one_kilometr = grid_x_con - grid_x
 
                 distance = get_distance(player_x, player_y, enemy_x, enemy_y)
-                #grid_width = grid_template.shape[1]
-                #grid_height = grid_template.shape[0]
-                #grid_size = (grid_x + grid_width, grid_y + grid_height)
-                return f"ДИСТАНЦИЯ {round(distance*1000/one_kilometr)} | {round(distance)} px \
-                    \nкоордината игрока {player_x, player_y} \
-                    \nкоордината вражеского игрока{enemy_x, enemy_y} \
-                    \nкоордината сетки {grid_x, grid_y} и {grid_x_con, grid_y}", screenshot
-            else:
-                return None, None
+                save_image_with_unique_name(screenshot, "opencv/opencv_screen.png")
+                all_processed_photos.append(screenshot)
+    return all_processed_photos
 
 
 def get_distance(x1, y1, x2, y2):
@@ -144,7 +139,7 @@ def find_objects_on_screenshot(screenshot_path, grid_templates, player_template_
     player_loc, player_val = match_template(player_template, screenshot)
     enemy_loc,  enemy_val  = match_template(enemy_template, screenshot)
 
-    print(f"игрок = {player_val}, враг = {enemy_val}")
+    #print(f"игрок = {player_val}, враг = {enemy_val}")
 
     threshold = 0.4  # You can adjust this threshold based on your requirement
     
@@ -200,12 +195,14 @@ def main():
     player_template_path = "teammate_1.png"
     enemy_template_path = "enemy_1.png"
 
-    result, screen = process_images_in_folder("G:\AMD_RELIVE\PlayerUnknown's Battlegrounds", grid_template_path, player_template_path, enemy_template_path)
+    screen = process_images_in_folder("G:\AMD_RELIVE\PlayerUnknown's Battlegrounds", grid_template_path, player_template_path, enemy_template_path)
+    for x in screen:
+        cv2.imshow('Screen', x)    
 
     #result, screen = find_objects_on_screenshot(screenshot_path, grid_template_path, player_template_path, enemy_template_path)
-    print(result)
-    save_image_with_unique_name(screen, "opencv_screen.png")
-    cv2.imshow('Screen', screen)
+    #print(result)
+    
+    #cv2.imshow('Screen', screen)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
