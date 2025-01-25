@@ -57,11 +57,14 @@ class DistanceCalc:
             DistanceCalc.needToReset = False
 
             DistanceCalc.SCREEN.draw_line(
-                DistanceCalc.verticalPointXCoord - 5, DistanceCalc.firstVerticalPoint, 
-                DistanceCalc.verticalPointXCoord - 5, DistanceCalc.secondVerticalPoint,
+                DistanceCalc.verticalPointXCoord, DistanceCalc.firstVerticalPoint, 
+                DistanceCalc.verticalPointXCoord, DistanceCalc.secondVerticalPoint,
                 color = "green", width = 5
             )
-            DistanceCalc.SCREEN.draw_text(DistanceCalc.verticalPointXCoord, (DistanceCalc.firstVerticalPoint+DistanceCalc.secondVerticalPoint)/2, 1000, "green", 90)
+            DistanceCalc.SCREEN.draw_text(
+                DistanceCalc.verticalPointXCoord - 14, (DistanceCalc.firstVerticalPoint+DistanceCalc.secondVerticalPoint)/2,
+                DistanceCalc.SCREEN.pixel_scale.get(), "green", 90
+            )
 
 
 
@@ -96,7 +99,7 @@ class DistanceCalc:
         #   normalized
 
         try:
-            normalizedDistance = distance * 1000 / DistanceCalc.oneKilometerInPixels
+            normalizedDistance = distance * DistanceCalc.SCREEN.pixel_scale.get() / DistanceCalc.oneKilometerInPixels
             DistanceCalc.SCREEN.draw_line(x1, y1, x2, y2)
             DistanceCalc.SCREEN.draw_text((x1+x2)/2, (y1+y2)/2, int(normalizedDistance), color='white', angle=angle)
         except ZeroDivisionError:
