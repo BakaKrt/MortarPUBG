@@ -40,7 +40,14 @@ class DistanceCalc:
             pprev = DistanceCalc.INPUTS[-1]
             DistanceCalc.drawDistanceAsLine(prev[0], prev[1], pprev[0], pprev[1])
             DistanceCalc.push.skip = True
-        
+    
+
+    @staticmethod
+    def fromGameMetersToMonitor(gameMeters:int) -> int:
+        #500px = 1000m
+        #?     = 700m
+        return DistanceCalc.oneKilometerInPixels * gameMeters / DistanceCalc.SCREEN.pixel_scale.get()
+
 
     @staticmethod
     def setVerticalPoint(x: int, y: int):
@@ -59,13 +66,26 @@ class DistanceCalc:
             DistanceCalc.SCREEN.draw_line(
                 DistanceCalc.verticalPointXCoord, DistanceCalc.firstVerticalPoint, 
                 DistanceCalc.verticalPointXCoord, DistanceCalc.secondVerticalPoint,
-                color = "green", width = 5
+                color = "green", width = 4
             )
+
+            # горизонтальные линии
+            DistanceCalc.SCREEN.draw_line(
+                DistanceCalc.verticalPointXCoord - 10, DistanceCalc.firstVerticalPoint + 2,
+                DistanceCalc.verticalPointXCoord + 10, DistanceCalc.firstVerticalPoint + 2,
+                color = "green", width = 4
+            )
+            DistanceCalc.SCREEN.draw_line(
+                DistanceCalc.verticalPointXCoord - 10, DistanceCalc.secondVerticalPoint - 2,
+                DistanceCalc.verticalPointXCoord + 10, DistanceCalc.secondVerticalPoint - 2,
+                color = "green", width = 4
+            )
+            # конец горизонтальных линий
+
             DistanceCalc.SCREEN.draw_text(
                 DistanceCalc.verticalPointXCoord - 14, (DistanceCalc.firstVerticalPoint+DistanceCalc.secondVerticalPoint)/2,
                 DistanceCalc.SCREEN.pixel_scale.get(), "green", 90
             )
-
 
 
     @staticmethod
@@ -85,7 +105,6 @@ class DistanceCalc:
         print(f"angle: {angle}, гипотенуза: {gipotenuza}")
 
         return gipotenuza, angle
-
 
     
     @staticmethod

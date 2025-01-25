@@ -8,9 +8,18 @@ from OpenCV import OpenCV
 from Listeners import _ListenerData, AllListener
 
 
+from OnScreenObject import OnScreenObject
+#тестово
+
 def myPush():
-    x, y = AllListener.get_mouse_pos()
-    DistanceCalc.push(x, y)
+    if screen.get_visible():
+        x, y = AllListener.get_mouse_pos()
+        DistanceCalc.push(x, y)
+
+def teammate_add():
+    if screen.get_teammate_add():
+        x, y = AllListener.get_mouse_pos()
+        screen.draw_teammate_at_screen(x, y)
 
 
 
@@ -33,10 +42,16 @@ distance_calc = DistanceCalc(screen)  #Передаем screen
 ctrl_lftmb_lstnr = _ListenerData("ctrl_lftmb",      myPush,               [0x1, 0x11])
 overlay_toggle   = _ListenerData("toggle_overlay",  screen.toggle_window, [0x4D]     )
 stepback         = _ListenerData("screen_stepback", screen.stepback,      [0xBD]     )
+teammate_append  = _ListenerData("teammateappnd"  , teammate_add,         [0x1]      )
 # скан коды: 1) https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
 #            2) https://api.farmanager.com/ru/winapi/virtualkeycodes.html
-Listener = AllListener([ctrl_lftmb_lstnr, overlay_toggle, stepback])
+Listener = AllListener([ctrl_lftmb_lstnr, overlay_toggle, stepback, teammate_append])
 Listener.start()
+
+
+#DistanceCalc.oneKilometerInPixels = 500
+# testScreenObj = OnScreenObject("teammate_1.png", 0, 0, 16, 17)
+# testScreenObj.draw(screen, 1920/2, 1080/2)
 
 
 

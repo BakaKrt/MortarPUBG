@@ -15,14 +15,14 @@ class MyScreen:
         self.root.wm_attributes("-transparentcolor", "grey")
         self.root.wm_attributes("-topmost", True) # Запускает окно поверх всех остальных
         self.root.overrideredirect(True) # Убирает заголовок окна, чтобы окно занимало весь экран
-        self.canvas = tk.Canvas(self.root, width=self.screen_width, height=self.screen_height, bg="grey", highlightthickness=0) # Используем цвет, который будет прозрачным, убираем белую рамку canvas
+        self.canvas = tk.Canvas(self.root, width=self.screen_width, height=self.screen_height, bg="grey", highlightthickness=0)
         self.canvas.pack()
 
 
         self.window_visible:tk.BooleanVar = True
 
         self.printed_elements = []
-
+        self.all_images:list[tk.PhotoImage] = []
 
         # видимость приложения
         self.checkbutton = ttk.Checkbutton(
@@ -51,7 +51,33 @@ class MyScreen:
             radio_button.place(x=self.checkbutton.winfo_reqwidth(), y=self.screen_height*0.1 + y_offset) # Располагаем вертикально
             y_offset = y_offset + 25
         # конец выбора размерной сетки
-        
+
+
+        # кнопка метки себя/союзника
+        self.teammates:tuple = {}
+        self.is_append_teammate:bool = False
+        self.btn_teammate_add = ttk.Button(
+            self.root, text="Добавить себя/тиммейта", command=self.btn_teammate_add_impl
+        )
+        self.btn_teammate_add.place(x = self.checkbutton.winfo_reqwidth(), y = self.screen_height*0.1 + y_offset)
+        # конец метки себя
+
+
+    def btn_teammate_add_impl(self):
+        if self.is_append_teammate:
+            self.is_append_teammate = False
+        else:
+            self.is_append_teammate = True
+
+    def draw_teammate_at_screen(self, x:int, y:int):
+        from OnScreenObject import OnScreenObject
+        teammate = OnScreenObject("teammate_1.png", 0, 0, 16, 17)
+        teammate.draw(self, x, y)
+        self.teammates["teammate_1.png"] = teammate
+        self.is_append_teammate = False
+
+    def get_teammate_add(self):
+        return self.is_append_teammate
 
     def get_visible(self):
         return self.window_visible
@@ -107,6 +133,10 @@ class MyScreen:
         """Внутренняя функция для отрисовки треугольника."""
         self.canvas.create_polygon(x1, y1, x2, y2, x3, y3, fill='', outline=color, width=width)
 
+    def draw_image(self, filename:str, x:int, y:int):
+        image = tk.PhotoImage(file = filename)
+        self.all_images.append(image)
+        self.canvas.create_image(x, y, image = self.all_images[-1])
 
     def toggle_window(self):
         """Показывает или скрывает окно."""

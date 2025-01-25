@@ -3,33 +3,7 @@ import numpy as np
 import os
 
 from Screen import MyScreen
-
-
-class OnScreenObject:
-    all_objects = []
-    def __init__(self, name:str, x1:int, y1:int, x2:int, y2:int):
-        self.name = name
-        self.x1 = x1
-        self.y1 = y1
-        self.x2 = x2
-        self.y2 = y2
-
-        self.center_x_offset = 0
-        self.center_y_offset = 0
-
-        if name.__contains__("ping"):
-            self.center_x_offset = abs(x2-x1)/2
-            self.center_y_offset = y2-y1
-
-        OnScreenObject.all_objects.append(self)
-    @staticmethod
-    def get(name:str):
-        for object in OnScreenObject.all_objects:
-            if object.name == name:
-                return object
-        return None
-    def __str__(self):
-        return f"Имя: {self.name}\nВерхний левый угол: {self.x1}, {self.y1}\nПравый нижний угол: {self.x2}, {self.y2}\nДо центра от левого верхнего угла: {self.center_x_offset}, {self.center_y_offset}"
+from OnScreenObject import OnScreenObject
 
 
 class OpenCV:
