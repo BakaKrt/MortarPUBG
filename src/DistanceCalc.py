@@ -1,4 +1,5 @@
-from Screen import MyScreen
+from src.Screen import MyScreen
+from src.OnScreenObject import OnScreenLineAndText, OnScreenLines
 import math
 
 
@@ -30,7 +31,7 @@ class DistanceCalc:
 
         DistanceCalc.INPUTS.append([x, y])
 
-        if len(DistanceCalc.INPUTS) <= 2:
+        if DistanceCalc.needToReset:
             DistanceCalc.setVerticalPoint(x, y)
         else:
             if DistanceCalc.push.skip == True:
@@ -41,6 +42,10 @@ class DistanceCalc:
             DistanceCalc.drawDistanceAsLine(prev[0], prev[1], pprev[0], pprev[1])
             DistanceCalc.push.skip = True
     
+
+    @staticmethod
+    def setNeedToReset():
+        DistanceCalc.needToReset = True
 
     @staticmethod
     def fromGameMetersToMonitor(gameMeters:int) -> int:
@@ -63,29 +68,30 @@ class DistanceCalc:
             # print(f" x: {DistanceCalc.verticalPointXCoord}")
             DistanceCalc.needToReset = False
 
-            DistanceCalc.SCREEN.draw_line(
-                DistanceCalc.verticalPointXCoord, DistanceCalc.firstVerticalPoint, 
+
+            oneKilometerGrid = OnScreenLineAndText(DistanceCalc.SCREEN,
+                DistanceCalc.verticalPointXCoord, DistanceCalc.firstVerticalPoint,
                 DistanceCalc.verticalPointXCoord, DistanceCalc.secondVerticalPoint,
-                color = "green", width = 4
+                text = DistanceCalc.SCREEN.pixel_scale.get(), angle = 90, color = "green", width = 4
             )
+            oneKilometerGrid.draw()
 
-            # горизонтальные линии
-            DistanceCalc.SCREEN.draw_line(
-                DistanceCalc.verticalPointXCoord - 10, DistanceCalc.firstVerticalPoint + 2,
-                DistanceCalc.verticalPointXCoord + 10, DistanceCalc.firstVerticalPoint + 2,
-                color = "green", width = 4
+            horizontalLines = OnScreenLines(DistanceCalc.SCREEN,
+                [
+                    [
+                        DistanceCalc.verticalPointXCoord - 10, DistanceCalc.firstVerticalPoint + 2,
+                        DistanceCalc.verticalPointXCoord + 10, DistanceCalc.firstVerticalPoint + 2,
+                    ],
+                    [
+                        DistanceCalc.verticalPointXCoord - 10, DistanceCalc.secondVerticalPoint - 2,
+                        DistanceCalc.verticalPointXCoord + 10, DistanceCalc.secondVerticalPoint - 2,
+                    ],
+                ], color = "green", width = 4
             )
-            DistanceCalc.SCREEN.draw_line(
-                DistanceCalc.verticalPointXCoord - 10, DistanceCalc.secondVerticalPoint - 2,
-                DistanceCalc.verticalPointXCoord + 10, DistanceCalc.secondVerticalPoint - 2,
-                color = "green", width = 4
-            )
-            # конец горизонтальных линий
+            horizontalLines.draw()
 
-            DistanceCalc.SCREEN.draw_text(
-                DistanceCalc.verticalPointXCoord - 14, (DistanceCalc.firstVerticalPoint+DistanceCalc.secondVerticalPoint)/2,
-                DistanceCalc.SCREEN.pixel_scale.get(), "green", 90
-            )
+
+            DistanceCalc.needToReset = False
 
 
     @staticmethod
@@ -119,8 +125,15 @@ class DistanceCalc:
 
         try:
             normalizedDistance = distance * DistanceCalc.SCREEN.pixel_scale.get() / DistanceCalc.oneKilometerInPixels
-            DistanceCalc.SCREEN.draw_line(x1, y1, x2, y2)
-            DistanceCalc.SCREEN.draw_text((x1+x2)/2, (y1+y2)/2, int(normalizedDistance), color='white', angle=angle)
+
+            distance = OnScreenLineAndText(DistanceCalc.SCREEN,
+                x1,y1,x2,y2,
+                text=int(normalizedDistance), color="red", angle=angle
+            )
+            distance.draw()
+
+            # DistanceCalc.SCREEN.draw_line(x1, y1, x2, y2)
+            # DistanceCalc.SCREEN.draw_text((x1+x2)/2, (y1+y2)/2, int(normalizedDistance), color='white', angle=angle)
         except ZeroDivisionError:
             return
 

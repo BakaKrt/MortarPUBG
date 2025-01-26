@@ -2,8 +2,8 @@ import cv2
 import numpy as np
 import os
 
-from Screen import MyScreen
-from OnScreenObject import OnScreenObject
+from src.Screen import MyScreen
+from src.OnScreenObject import OnScreenObject
 
 
 class OpenCV:

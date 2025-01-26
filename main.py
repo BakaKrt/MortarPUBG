@@ -1,14 +1,10 @@
-# from pynput import mouse
-
-# import keyboard
-
-from DistanceCalc import DistanceCalc
-from Screen import MyScreen
-from OpenCV import OpenCV
-from Listeners import _ListenerData, AllListener
+from src.DistanceCalc import DistanceCalc
+from src.Screen import MyScreen
+from src.OpenCV import OpenCV
+from src.Listeners import _ListenerData, AllListener
 
 
-from OnScreenObject import OnScreenObject
+from src.OnScreenObject import OnScreenObject
 #тестово
 
 def myPush():
@@ -21,6 +17,11 @@ def teammate_add():
         x, y = AllListener.get_mouse_pos()
         screen.draw_teammate_at_screen(x, y)
 
+# def setk_redraw():
+#     print("dgnkjdsgs")
+#     if screen.get_visible():
+#         DistanceCalc.setNeedToReset()
+#         myPush()
 
 
 # def kb_test(screen):
@@ -41,7 +42,8 @@ distance_calc = DistanceCalc(screen)  #Передаем screen
 
 ctrl_lftmb_lstnr = _ListenerData("ctrl_lftmb",      myPush,               [0x1, 0x11])
 overlay_toggle   = _ListenerData("toggle_overlay",  screen.toggle_window, [0x4D]     )
-stepback         = _ListenerData("screen_stepback", screen.stepback,      [0xBD]     )
+stepback         = _ListenerData("screen_stepback", OnScreenObject.delete_last,[0xBD])
+#redraw_setka     = _ListenerData("redraw_setka"   , setk_redraw,          [0x1, 0x12])
 teammate_append  = _ListenerData("teammateappnd"  , teammate_add,         [0x1]      )
 # скан коды: 1) https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
 #            2) https://api.farmanager.com/ru/winapi/virtualkeycodes.html
@@ -52,6 +54,7 @@ Listener.start()
 #DistanceCalc.oneKilometerInPixels = 500
 # testScreenObj = OnScreenObject("teammate_1.png", 0, 0, 16, 17)
 # testScreenObj.draw(screen, 1920/2, 1080/2)
+
 
 
 

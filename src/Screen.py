@@ -4,7 +4,6 @@ import pyautogui
 
 
 class MyScreen:
-
     def __init__(self):
         
         self.root = tk.Tk()
@@ -34,6 +33,16 @@ class MyScreen:
         )
         self.checkbutton.place(x=0, y=self.screen_height*0.1) # Размещаем в углу
         # конец видимости приложения
+
+
+        # перерисовать размерную сетку
+        # self.need_to_redraw_size = tk.BooleanVar(value=Di)
+        # self.checkbutton = ttk.Checkbutton(
+        #     self.root,
+        #     text="Нарисовать заново\nразмерную сетку",
+        #     variable=
+        # )
+        # конец перерисовки
 
 
         # выбор размерной сетки
@@ -70,7 +79,7 @@ class MyScreen:
             self.is_append_teammate = True
 
     def draw_teammate_at_screen(self, x:int, y:int):
-        from OnScreenObject import OnScreenObject
+        from src.OnScreenObject import OnScreenObject
         teammate = OnScreenObject("teammate_1.png", 0, 0, 16, 17)
         teammate.draw(self, x, y)
         self.teammates["teammate_1.png"] = teammate
@@ -137,6 +146,7 @@ class MyScreen:
         image = tk.PhotoImage(file = filename)
         self.all_images.append(image)
         self.canvas.create_image(x, y, image = self.all_images[-1])
+        return self.all_images[-1]
 
     def toggle_window(self):
         """Показывает или скрывает окно."""
