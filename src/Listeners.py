@@ -37,7 +37,7 @@ class AllListener:
             for func in self.listenFunctions:
                 allButtonsPressed = True
                 for key in func.keys:
-                    allButtonsPressed *= win32api.GetAsyncKeyState(key) < 0
+                    allButtonsPressed *= (win32api.GetAsyncKeyState(key) < 0)
                 #print(f"DEBUG: {func.name} {func.keys} state {allButtonsPressed}")
                 if allButtonsPressed == True and func.prev_state == 0:
                     func.func()

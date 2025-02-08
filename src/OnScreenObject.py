@@ -1,20 +1,23 @@
 from abc import ABC, abstractmethod
 import os
 import tkinter as tk
+import math
 
 class OnScreenObject(ABC):
-    ALL_OBJECTS:tuple['OnScreenObject'] = {}
+    ALL_OBJECTS:list['OnScreenObject'] = []
     from src.Screen import MyScreen
     def __init__(self, screen:MyScreen):
         self.screen = screen
         self.canvas = screen.canvas
         self.item_id = None  # id отрисованного объекта
-        OnScreenObject.ALL_OBJECTS.append(self)
     
     @abstractmethod
     def draw(self):
         """Абстрактный метод для отрисовки объекта на холсте."""
         pass
+
+    def _append(self):
+        OnScreenObject.ALL_OBJECTS.append(self)
 
     @abstractmethod
     def delete(self):
@@ -42,12 +45,16 @@ class OnScreenText(OnScreenObject):
         self.color = color
         self.angle = angle
         self.fontSize = fontSize
+        self.x_offset = (self.fontSize + 4) * math.cos(math.radians(angle) + math.pi / 2)
+        self.y_offset = (self.fontSize + 4) * math.sin(math.radians(angle) + math.pi / 2)
+        print(f"оффсеты {self.x_offset}, {self.y_offset}")
     
-    def draw(self):
+    def draw(self) -> int:
         self.item_id = self.canvas.create_text(
-            self.x, self.y, text = self.text,
+            self.x + self.x_offset, self.y + self.y_offset, text = self.text,
             angle = self.angle, fill = self.color, font = ("Arial", self.fontSize)
         )
+        super()._append()
         return self.item_id
 
     def delete(self):
@@ -68,8 +75,10 @@ class OnScreenLine(OnScreenObject):
         self.color = color
         self.width = width
         
-    def draw(self):
+    def draw(self) -> int:
         self.item_id = self.canvas.create_line(self.x1, self.y1, self.x2, self.y2, fill=self.color, width=self.width)
+        super()._append()
+        return self.item_id
 
     def delete(self):
         if self.item_id:
@@ -84,7 +93,7 @@ class OnScreenLineAndText(OnScreenObject):
         self.y2 = y2
         self.color = color
         self.width = width
-        self.text_obj = OnScreenText(screen, (self.x1+self.x2)/2 - 5, (self.y1+self.y2)/2 - 5, text, color, angle, fontSize)
+        self.text_obj = OnScreenText(screen, (self.x1+self.x2)/2, (self.y1+self.y2)/2, text, color, angle, fontSize)
 
         super().__init__(screen)
         
@@ -92,6 +101,7 @@ class OnScreenLineAndText(OnScreenObject):
         self.item_id = []
         self.item_id.append(self.canvas.create_line(self.x1, self.y1, self.x2, self.y2, fill=self.color, width=self.width))
         self.item_id.append(self.text_obj.draw())
+        super()._append()
 
     def delete(self):
         if len(self.item_id) > 0:
@@ -114,6 +124,7 @@ class OnScreenLines(OnScreenObject):
         self.item_id = []
         for coords in self.coords:
             self.item_id.append(self.canvas.create_line(coords[0], coords[1], coords[2], coords[3], fill=self.color, width=self.width))
+            super()._append()
         
 
     def delete(self):
@@ -139,6 +150,7 @@ class OnScreenCircle(OnScreenObject):
         x2 = self.x + self.radius
         y2 = self.y + self.radius
         self.item_id = self.canvas.create_oval(x1, y1, x2, y2, fill=self.color, width=self.width)
+        super()._append()
 
     def delete(self):
         if self.item_id:
@@ -153,7 +165,7 @@ class OnScreenImage(OnScreenObject):
         self.photo = None
 
 
-    def draw(self):
+    def draw(self) ->int | None:
         if not os.path.exists(self.image_path):
             print(f"Error: Image file not found at: {self.image_path}")
             return
@@ -162,6 +174,8 @@ class OnScreenImage(OnScreenObject):
             self.photo = tk.PhotoImage(file=self.image_path)
             self.canvas.image = self.photo # Keep a reference!
             self.item_id = self.canvas.create_image(self.x, self.y, image=self.photo)
+            super()._append()
+            return self.item_id
 
         except Exception as e:
             print(f"Error loading image: {e}")
