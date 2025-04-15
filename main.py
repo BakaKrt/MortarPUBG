@@ -41,13 +41,14 @@ distance_calc = DistanceCalc(screen)  #Передаем screen
 
 
 ctrl_lftmb_lstnr = _ListenerData("ctrl_lftmb",      myPush,               [0x1, 0x11])
+ctrl_lftmb_lstnr_ = _ListenerData("ctrl_lftmb1",     myPush,               [0x5, 0x11])
 overlay_toggle   = _ListenerData("toggle_overlay",  screen.toggle_window, [0x4D]     )
 stepback         = _ListenerData("screen_stepback", OnScreenObject.delete_last,[0xBD])
 #redraw_setka     = _ListenerData("redraw_setka"   , setk_redraw,          [0x1, 0x12])
 teammate_append  = _ListenerData("teammateappnd"  , teammate_add,         [0x1]      )
 # скан коды: 1) https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
 #            2) https://api.farmanager.com/ru/winapi/virtualkeycodes.html
-Listener = AllListener([ctrl_lftmb_lstnr, overlay_toggle, stepback, teammate_append])
+Listener = AllListener([ctrl_lftmb_lstnr, ctrl_lftmb_lstnr_, overlay_toggle, stepback, teammate_append])
 Listener.start()
 
 
